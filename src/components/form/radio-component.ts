@@ -4,6 +4,9 @@ import { extractStylesAndProps } from '../../utils/quasar-utils';
 import { applyStylesToFigmaNode, createText } from '../../utils/figma-utils';
 import { quasarColors } from '../../data/color-map';
 
+// Remover importação incorreta
+// import { FrameNode, EllipseNode } from '@figma/plugin-typings';
+
 type QuasarColorKey = keyof typeof quasarColors;
 
 function isQuasarColorKey(key: string): key is QuasarColorKey {
@@ -14,10 +17,11 @@ function isQuasarColorKey(key: string): key is QuasarColorKey {
  * Processa um componente radio Quasar (q-radio)
  */
 export async function processRadioComponent(node: QuasarNode, settings: PluginSettings): Promise<FrameNode> {
-  const radioFrame = figma.createFrame(); // Garantir que é um FrameNode
+  // Criação de FrameNode sem type assertion específica
+  const radioFrame = figma.createFrame();
   radioFrame.name = "q-radio";
   
-  // Configurações de layout e estilo
+  // Configuração básica
   radioFrame.layoutMode = "HORIZONTAL";
   radioFrame.primaryAxisSizingMode = "AUTO";
   radioFrame.counterAxisSizingMode = "AUTO";
@@ -25,7 +29,7 @@ export async function processRadioComponent(node: QuasarNode, settings: PluginSe
   radioFrame.counterAxisAlignItems = "CENTER";
   radioFrame.itemSpacing = 8;
   
-  // Correção: Definir fills de forma segura
+  // Definição de fills de forma mais segura
   radioFrame.fills = [{ 
     type: 'SOLID', 
     color: { r: 1, g: 1, b: 1 }, 
@@ -46,6 +50,12 @@ export async function processRadioComponent(node: QuasarNode, settings: PluginSe
   circleFrame.name = "q-radio__inner";
   circleFrame.resize(20, 20);
   
+  // Definição de fills para o círculo
+  circleFrame.fills = [{ 
+    type: 'SOLID', 
+    color: { r: 1, g: 1, b: 1 } 
+  }];
+  
   // Verificar se está marcado
   const isChecked = props.value === 'true' || 
                     extractAttributeValue(props, 'value') === extractAttributeValue(props, 'val') ||
@@ -54,6 +64,8 @@ export async function processRadioComponent(node: QuasarNode, settings: PluginSe
   if (isChecked && settings.preserveQuasarColors) {
     // Estilo marcado
     circleFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+    
+    // Adicionar strokes
     circleFrame.strokes = [{ type: 'SOLID', color: radioColor }];
     circleFrame.strokeWeight = 2;
     
@@ -63,21 +75,37 @@ export async function processRadioComponent(node: QuasarNode, settings: PluginSe
     innerCircle.resize(10, 10);
     innerCircle.x = 5;
     innerCircle.y = 5;
+    
+    // Definição de fills para o círculo interno
     innerCircle.fills = [{ type: 'SOLID', color: radioColor }];
     
     // Criar um frame container para conter o círculo e seu indicador interno
     const circleContainer = figma.createFrame();
     circleContainer.name = "q-radio__container";
     circleContainer.resize(20, 20);
-    circleContainer.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 }, opacity: 0 }];
+    
+    // Definição de fills para o container
+    circleContainer.fills = [{ 
+      type: 'SOLID', 
+      color: { r: 1, g: 1, b: 1 }, 
+      opacity: 0 
+    }];
+    
     circleContainer.appendChild(circleFrame);
     circleContainer.appendChild(innerCircle);
     radioFrame.appendChild(circleContainer);
     
   } else {
     // Estilo desmarcado
-    circleFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
-    circleFrame.strokes = [{ type: 'SOLID', color: { r: 0.7, g: 0.7, b: 0.7 } }];
+    circleFrame.fills = [{ 
+      type: 'SOLID', 
+      color: { r: 1, g: 1, b: 1 } 
+    }];
+    
+    circleFrame.strokes = [{ 
+      type: 'SOLID', 
+      color: { r: 0.7, g: 0.7, b: 0.7 } 
+    }];
     circleFrame.strokeWeight = 1;
     radioFrame.appendChild(circleFrame);
   }
@@ -101,17 +129,6 @@ export async function processRadioComponent(node: QuasarNode, settings: PluginSe
     );
     if ('opacity' in circleNode) {
       (circleNode as any).opacity = 0.5;
-    } else {
-      // Alternativa: usar fills com opacidade reduzida
-      if (circleNode.fills && Array.isArray(circleNode.fills) && circleNode.fills.length > 0) {
-        const newFills = [...circleNode.fills];
-        for (const fill of newFills) {
-          if (fill.type === 'SOLID') {
-            fill.opacity = 0.5;
-          }
-        }
-        circleNode.fills = newFills;
-      }
     }
     
     if (props.label) {
