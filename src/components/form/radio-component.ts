@@ -14,17 +14,23 @@ function isQuasarColorKey(key: string): key is QuasarColorKey {
  * Processa um componente radio Quasar (q-radio)
  */
 export async function processRadioComponent(node: QuasarNode, settings: PluginSettings): Promise<FrameNode> {
-  const radioFrame = figma.createFrame();
+  const radioFrame = figma.createFrame(); // Garantir que é um FrameNode
   radioFrame.name = "q-radio";
   
-  // Configuração básica
+  // Configurações de layout e estilo
   radioFrame.layoutMode = "HORIZONTAL";
   radioFrame.primaryAxisSizingMode = "AUTO";
   radioFrame.counterAxisSizingMode = "AUTO";
   radioFrame.primaryAxisAlignItems = "CENTER";
   radioFrame.counterAxisAlignItems = "CENTER";
   radioFrame.itemSpacing = 8;
-  radioFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 }, opacity: 0 }];
+  
+  // Correção: Definir fills de forma segura
+  radioFrame.fills = [{ 
+    type: 'SOLID', 
+    color: { r: 1, g: 1, b: 1 }, 
+    opacity: 0 
+  }];
   
   // Extrair propriedades
   const { props, styles } = extractStylesAndProps(node);

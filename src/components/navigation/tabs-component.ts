@@ -95,7 +95,7 @@ export async function processTabsComponent(node: QuasarNode, settings: PluginSet
       tabFrame.layoutMode = "HORIZONTAL";
       tabFrame.primaryAxisSizingMode = "FIXED";
       tabFrame.counterAxisSizingMode = "AUTO";
-      tabFrame.width = 400 / tabNodes.length;
+      tabFrame.resize(400, tabFrame.height);
       tabFrame.paddingLeft = 16;
       tabFrame.paddingRight = 16;
       tabFrame.paddingTop = 12;
