@@ -39,7 +39,7 @@ export async function processIconComponent(node: QuasarNode, settings: PluginSet
   iconFrame.layoutMode = "HORIZONTAL";
   iconFrame.primaryAxisAlignItems = "CENTER";
   iconFrame.counterAxisAlignItems = "CENTER";
-  iconFrame.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0, opacity: 0 } }];
+  iconFrame.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0 }, opacity: 0 }];
   
   // Determinar cor do ícone
   let iconColor = { r: 0, g: 0, b: 0 }; // Preto por padrão

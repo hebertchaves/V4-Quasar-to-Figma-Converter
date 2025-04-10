@@ -15,7 +15,7 @@ export async function processTabsComponent(node: QuasarNode, settings: PluginSet
   tabsFrame.layoutMode = "HORIZONTAL";
   tabsFrame.primaryAxisSizingMode = "FIXED";
   tabsFrame.counterAxisSizingMode = "AUTO";
-  tabsFrame.width = 400; // Largura padrão
+  tabsFrame.resize(400, tabsFrame.height); // Largura padrão
   tabsFrame.itemSpacing = 0;
   tabsFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
   
@@ -44,7 +44,7 @@ export async function processTabsComponent(node: QuasarNode, settings: PluginSet
       tabFrame.layoutMode = "HORIZONTAL";
       tabFrame.primaryAxisSizingMode = "FIXED";
       tabFrame.counterAxisSizingMode = "AUTO";
-      tabFrame.width = 400 / exampleTabs.length;
+      tabFrame.resize(400 / exampleTabs.length, tabFrame.height);
       tabFrame.paddingLeft = 16;
       tabFrame.paddingRight = 16;
       tabFrame.paddingTop = 12;

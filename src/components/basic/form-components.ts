@@ -193,7 +193,7 @@ async function processQSelect(node: QuasarNode, settings: PluginSettings): Promi
     const dropdownIcon = figma.createFrame();
     dropdownIcon.name = "q-select__dropdown-icon";
     dropdownIcon.resize(16, 16);
-    dropdownIcon.fills = [{ type: 'SOLID', color: { r: 0.6, g: 0.6, b: 0.6 } }];
+    dropdownIcon.fills = [{ type: 'SOLID', color: { r: 0.6, g: 0.6, b: 0.6 }, opacity: 0 }];
     
     // Adicionar símbolo de seta
     const arrowText = await createText("▼", {

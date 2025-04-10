@@ -82,7 +82,7 @@ async function processListItem(node: QuasarNode, index: number, settings: Plugin
   
   // Configuração básica
   itemFrame.layoutMode = "HORIZONTAL";
-  itemFrame.primaryAxisSizingMode = "FILL";
+  itemFrame.primaryAxisSizingMode = "AUTO";
   itemFrame.counterAxisSizingMode = "AUTO";
   itemFrame.paddingLeft = 16;
   itemFrame.paddingRight = 16;
@@ -186,7 +186,7 @@ async function createListItem(text: string, index: number, settings: PluginSetti
   
   // Configuração básica
   itemFrame.layoutMode = "HORIZONTAL";
-  itemFrame.primaryAxisSizingMode = "FILL";
+  itemFrame.primaryAxisSizingMode = "AUTO";
   itemFrame.counterAxisSizingMode = "AUTO";
   itemFrame.paddingLeft = 16;
   itemFrame.paddingRight = 16;

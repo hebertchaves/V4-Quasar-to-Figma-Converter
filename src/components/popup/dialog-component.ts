@@ -3,7 +3,7 @@ import { QuasarNode, PluginSettings } from '../../types/settings';
 import { extractStylesAndProps } from '../../utils/quasar-utils';
 import { applyStylesToFigmaNode, createText, createShadowEffect } from '../../utils/figma-utils';
 import { quasarColors } from '../../data/color-map';
-import { processButtonComponent } from '../form/button-component';
+import { processButtonComponent } from '../basic/button-component';
 
 /**
  * Processa um componente de diálogo Quasar (q-dialog)
@@ -39,7 +39,7 @@ export async function processDialogComponent(node: QuasarNode, settings: PluginS
   const titleContainer = figma.createFrame();
   titleContainer.name = "q-dialog__title";
   titleContainer.layoutMode = "HORIZONTAL";
-  titleContainer.primaryAxisSizingMode = "FILL";
+  titleContainer.primaryAxisSizingMode = "AUTO";
   titleContainer.counterAxisSizingMode = "AUTO";
   titleContainer.paddingLeft = 16;
   titleContainer.paddingRight = 16;
@@ -53,7 +53,7 @@ export async function processDialogComponent(node: QuasarNode, settings: PluginS
   contentContainer.name = "q-dialog__content";
   contentContainer.layoutMode = "VERTICAL";
   contentContainer.primaryAxisSizingMode = "AUTO";
-  contentContainer.counterAxisSizingMode = "FILL";
+  contentContainer.counterAxisSizingMode = "AUTO";
   contentContainer.paddingLeft = 16;
   contentContainer.paddingRight = 16;
   contentContainer.paddingTop = 0;
@@ -71,9 +71,9 @@ export async function processDialogComponent(node: QuasarNode, settings: PluginS
   const actionsContainer = figma.createFrame();
   actionsContainer.name = "q-dialog__actions";
   actionsContainer.layoutMode = "HORIZONTAL";
-  actionsContainer.primaryAxisSizingMode = "FILL";
+  actionsContainer.primaryAxisSizingMode = "AUTO";
   actionsContainer.counterAxisSizingMode = "AUTO";
-  actionsContainer.primaryAxisAlignItems = "END";
+  actionsContainer.primaryAxisAlignItems = "MAX";
   actionsContainer.paddingLeft = 16;
   actionsContainer.paddingRight = 16;
   actionsContainer.paddingTop = 8;

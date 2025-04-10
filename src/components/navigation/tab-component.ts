@@ -163,7 +163,7 @@ export async function processTabPanelsComponent(node: QuasarNode, settings: Plug
     emptyPanel.name = "q-tab-panel";
     emptyPanel.layoutMode = "VERTICAL";
     emptyPanel.primaryAxisSizingMode = "AUTO";
-    emptyPanel.counterAxisSizingMode = "FILL";
+    emptyPanel.counterAxisSizingMode = "AUTO";
     emptyPanel.paddingLeft = 16;
     emptyPanel.paddingRight = 16;
     emptyPanel.paddingTop = 16;
@@ -193,7 +193,7 @@ export async function processTabPanelComponent(node: QuasarNode, settings: Plugi
   // Configuração básica
   panelFrame.layoutMode = "VERTICAL";
   panelFrame.primaryAxisSizingMode = "AUTO";
-  panelFrame.counterAxisSizingMode = "FILL";
+  panelFrame.counterAxisSizingMode = "AUTO";
   panelFrame.paddingLeft = 16;
   panelFrame.paddingRight = 16;
   panelFrame.paddingTop = 16;

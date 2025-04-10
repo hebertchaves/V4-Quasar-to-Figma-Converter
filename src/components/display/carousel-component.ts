@@ -127,7 +127,7 @@ export async function processCarouselComponent(node: QuasarNode, settings: Plugi
     const arrowsContainer = figma.createFrame();
     arrowsContainer.name = "q-carousel__arrows";
     arrowsContainer.layoutMode = "HORIZONTAL";
-    arrowsContainer.primaryAxisSizingMode = "FILL";
+    arrowsContainer.primaryAxisSizingMode = "AUTO";
     arrowsContainer.counterAxisSizingMode = "FIXED";
     arrowsContainer.resize(arrowsContainer.width, 40);
     arrowsContainer.primaryAxisAlignItems = "SPACE_BETWEEN";

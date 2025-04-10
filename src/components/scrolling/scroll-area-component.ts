@@ -11,8 +11,7 @@ export async function processScrollAreaComponent(node: QuasarNode, settings: Plu
   scrollAreaFrame.layoutMode = "VERTICAL";
   scrollAreaFrame.primaryAxisSizingMode = "FIXED";
   scrollAreaFrame.counterAxisSizingMode = "FIXED";
-  scrollAreaFrame.width = 300;
-  scrollAreaFrame.height = 400;
+  scrollAreaFrame.resize(300, 400);
   
   // Estilo de container de scroll
   scrollAreaFrame.fills = [{ type: 'SOLID', color: { r: 0.98, g: 0.98, b: 0.98 } }];
@@ -30,7 +29,7 @@ export async function processScrollAreaComponent(node: QuasarNode, settings: Plu
   contentFrame.layoutMode = "VERTICAL";
   contentFrame.primaryAxisSizingMode = "AUTO";
   contentFrame.counterAxisSizingMode = "FIXED";
-  contentFrame.width = 280;
+  contentFrame.resize(280, contentFrame.height);
   contentFrame.itemSpacing = 16;
   contentFrame.paddingLeft = 10;
   contentFrame.paddingRight = 10;

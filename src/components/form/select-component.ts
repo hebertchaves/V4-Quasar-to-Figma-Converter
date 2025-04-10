@@ -109,7 +109,7 @@ export async function processSelectComponent(node: QuasarNode, settings: PluginS
   const dropdownIcon = figma.createFrame();
   dropdownIcon.name = "q-select__dropdown-icon";
   dropdownIcon.resize(24, 24);
-  dropdownIcon.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0, opacity: 0 } }];
+  dropdownIcon.fills = [{ type: 'SOLID', color: { r: 0.6, g: 0.6, b: 0.6 }, opacity: 0 }];
   
   const arrowText = await createText("▼", {
     fontSize: 10,

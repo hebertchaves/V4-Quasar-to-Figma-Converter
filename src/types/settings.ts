@@ -117,3 +117,7 @@ export interface ExtractedStyles {
   fontColor?: RGB;
   [key: string]: any;
 }
+export interface ComponentTypeInfo {
+  category: string;
+  type: string;
+}

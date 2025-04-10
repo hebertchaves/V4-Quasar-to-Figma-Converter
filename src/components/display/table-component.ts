@@ -65,7 +65,7 @@ async function createTableHeader(headers: TableHeader[], settings: PluginSetting
   const headerFrame = figma.createFrame();
   headerFrame.name = "q-table-header";
   headerFrame.layoutMode = "HORIZONTAL";
-  headerFrame.primaryAxisSizingMode = "FILL";
+  headerFrame.primaryAxisSizingMode = "AUTO";
   headerFrame.counterAxisSizingMode = "AUTO";
   headerFrame.fills = [{ type: 'SOLID', color: { r: 0.95, g: 0.95, b: 0.95 } }];
   headerFrame.paddingLeft = 8;
@@ -102,7 +102,7 @@ async function createTableRows(headers: TableHeader[], rows: TableRow[], setting
   rowsFrame.name = "q-table-rows";
   rowsFrame.layoutMode = "VERTICAL";
   rowsFrame.primaryAxisSizingMode = "AUTO";
-  rowsFrame.counterAxisSizingMode = "FILL";
+  rowsFrame.counterAxisSizingMode = "AUTO";
   rowsFrame.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0 }, opacity: 0 }];
   rowsFrame.itemSpacing = 0;
   
@@ -111,7 +111,7 @@ async function createTableRows(headers: TableHeader[], rows: TableRow[], setting
     const rowFrame = figma.createFrame();
     rowFrame.name = `row-${i+1}`;
     rowFrame.layoutMode = "HORIZONTAL";
-    rowFrame.primaryAxisSizingMode = "FILL";
+    rowFrame.primaryAxisSizingMode = "AUTO";
     rowFrame.counterAxisSizingMode = "AUTO";
     rowFrame.paddingLeft = 8;
     rowFrame.paddingRight = 8;

@@ -102,9 +102,9 @@ export async function processButtonComponent(node: QuasarNode, settings: PluginS
     
     // Cor do ícone igual à do texto
     const textNode = buttonFrame.findChild(n => n.type === 'TEXT') as TextNode;
-    if (textNode && textNode.fills && textNode.fills.length > 0) {
+    if (textNode && textNode.fills && Array.isArray(textNode.fills) && textNode.fills.length > 0) {
       // Criar cópia de fills segura, removendo propriedades inválidas
-      iconFrame.fills = textNode.fills.map(fill => {
+      iconFrame.fills = [...textNode.fills].map(fill => {
         if (fill.type === 'SOLID') {
           return { 
             type: 'SOLID', 
@@ -112,8 +112,7 @@ export async function processButtonComponent(node: QuasarNode, settings: PluginS
               r: fill.color.r, 
               g: fill.color.g, 
               b: fill.color.b 
-            },
-            opacity: fill.opacity
+            } 
           };
         }
         return fill;

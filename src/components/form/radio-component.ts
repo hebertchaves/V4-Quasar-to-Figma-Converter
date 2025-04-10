@@ -93,8 +93,19 @@ export async function processRadioComponent(node: QuasarNode, settings: PluginSe
     const circleNode = radioFrame.findChild(node => 
       node.name === "q-radio__container" || node.name === "q-radio__inner"
     );
-    if (circleNode) {
-      circleNode.opacity = 0.5;
+    if ('opacity' in circleNode) {
+      (circleNode as any).opacity = 0.5;
+    } else {
+      // Alternativa: usar fills com opacidade reduzida
+      if (circleNode.fills && Array.isArray(circleNode.fills) && circleNode.fills.length > 0) {
+        const newFills = [...circleNode.fills];
+        for (const fill of newFills) {
+          if (fill.type === 'SOLID') {
+            fill.opacity = 0.5;
+          }
+        }
+        circleNode.fills = newFills;
+      }
     }
     
     if (props.label) {

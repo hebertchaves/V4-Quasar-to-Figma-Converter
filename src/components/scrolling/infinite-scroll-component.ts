@@ -11,7 +11,7 @@ export async function processInfiniteScrollComponent(node: QuasarNode, settings:
   scrollFrame.layoutMode = "VERTICAL";
   scrollFrame.primaryAxisSizingMode = "AUTO";
   scrollFrame.counterAxisSizingMode = "FIXED";
-  scrollFrame.width = 400;
+  scrollFrame.resize(400, scrollFrame.height);
   scrollFrame.itemSpacing = 8;
   
   // Extrair propriedades
