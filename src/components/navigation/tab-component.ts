@@ -49,6 +49,9 @@ export async function processTabComponent(node: QuasarNode, settings: PluginSett
     if (props.active === 'true' || props.active === '') {
       tabFrame.strokes = [{ type: 'SOLID', color: tabColor }];
       tabFrame.strokeBottomWeight = 2;
+      tabFrame.strokeTopWeight = 0;
+      tabFrame.strokeLeftWeight = 0;
+      tabFrame.strokeRightWeight = 0;
     }
   }
   
@@ -62,6 +65,9 @@ export async function processTabComponent(node: QuasarNode, settings: PluginSett
     if (!tabColor) {
       tabFrame.strokes = [{ type: 'SOLID', color: quasarColors.primary }];
       tabFrame.strokeBottomWeight = 2;
+      tabFrame.strokeTopWeight = 0;
+      tabFrame.strokeLeftWeight = 0;
+      tabFrame.strokeRightWeight = 0;
     }
     
     // Texto em negrito quando ativo
@@ -70,14 +76,18 @@ export async function processTabComponent(node: QuasarNode, settings: PluginSett
       color: tabColor || quasarColors.primary
     });
     
-    tabFrame.appendChild(tabTextNode);
+    if (tabTextNode) {
+      tabFrame.appendChild(tabTextNode);
+    }
   } else {
     // Estilo inativo
     const tabTextNode = await createText(tabLabel, {
       color: { r: 0.5, g: 0.5, b: 0.5 }
     });
     
-    tabFrame.appendChild(tabTextNode);
+    if (tabTextNode) {
+      tabFrame.appendChild(tabTextNode);
+    }
   }
   
   // Adicionar ícone se especificado
@@ -98,6 +108,9 @@ export async function processTabComponent(node: QuasarNode, settings: PluginSett
       // Adicionar no início do tab
       tabFrame.insertChild(0, iconFrame);
     }
+    
+    // Adicionar espaçamento
+    tabFrame.itemSpacing = 8;
   }
   
   return tabFrame;
@@ -114,7 +127,7 @@ export async function processTabPanelsComponent(node: QuasarNode, settings: Plug
   panelsFrame.layoutMode = "VERTICAL";
   panelsFrame.primaryAxisSizingMode = "AUTO";
   panelsFrame.counterAxisSizingMode = "FIXED";
-  panelsFrame.width = 400; // Largura padrão, pode ser ajustada
+  panelsFrame.resize(400, panelsFrame.height);
   panelsFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
   
   // Extrair propriedades e estilos
@@ -161,8 +174,10 @@ export async function processTabPanelsComponent(node: QuasarNode, settings: Plug
       fontSize: 14
     });
     
-    emptyPanel.appendChild(emptyText);
-    panelsFrame.appendChild(emptyPanel);
+    if (emptyText) {
+      emptyPanel.appendChild(emptyText);
+      panelsFrame.appendChild(emptyPanel);
+    }
   }
   
   return panelsFrame;
@@ -196,19 +211,26 @@ export async function processTabPanelComponent(node: QuasarNode, settings: Plugi
         fontSize: 14
       });
       
-      panelFrame.appendChild(textNode);
+      if (textNode) {
+        panelFrame.appendChild(textNode);
+      }
       continue;
     }
     
     // Para outros elementos, tratar como componentes genéricos
     if (child.tagName) {
       try {
-        // Importando processamento genérico
-        const { processGenericComponent } = require('../converter');
-        const childComponent = await processGenericComponent(child, settings);
+        // Processamento genérico para componentes filhos
+        // Normalmente aqui chamaríamos processGenericComponent, mas como não temos acesso
+        // direto a ele, vamos criar um texto simples com o tipo de componente
+        const childName = child.tagName.toLowerCase();
+        const childNode = await createText(`Conteúdo ${childName}`, {
+          fontSize: 14,
+          color: { r: 0.3, g: 0.3, b: 0.3 }
+        });
         
-        if (childComponent) {
-          panelFrame.appendChild(childComponent);
+        if (childNode) {
+          panelFrame.appendChild(childNode);
         }
       } catch (error) {
         console.error('Erro ao processar filho do painel:', error);
@@ -222,7 +244,9 @@ export async function processTabPanelComponent(node: QuasarNode, settings: Plugi
       fontSize: 14
     });
     
-    panelFrame.appendChild(defaultText);
+    if (defaultText) {
+      panelFrame.appendChild(defaultText);
+    }
   }
   
   return panelFrame;

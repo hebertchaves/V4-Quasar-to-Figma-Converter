@@ -1,4 +1,3 @@
-// components/form/form-components.ts
 import { QuasarNode, PluginSettings } from '../../types/settings';
 import { extractStylesAndProps } from '../../utils/quasar-utils';
 import { applyStylesToFigmaNode, createText, setNodeSize, createShadowEffect } from '../../utils/figma-utils';
@@ -16,7 +15,7 @@ function isQuasarColorKey(key: string): key is QuasarColorKey {
 /**
  * Processa componentes de formulário Quasar
  */
-export async function processFormComponents(node: QuasarNode, settings: PluginSettings): Promise<FrameNode> {
+export async function processFormComponents(node: QuasarNode, componentType: string, settings: PluginSettings): Promise<FrameNode> {
   const tagName = node.tagName.toLowerCase();
   
   switch (tagName) {
@@ -97,8 +96,7 @@ async function processQInput(node: QuasarNode, settings: PluginSettings): Promis
   controlFrame.layoutMode = "HORIZONTAL";
   controlFrame.primaryAxisSizingMode = "FIXED";
   controlFrame.counterAxisSizingMode = "AUTO";
-  // Usar resize em vez de atribuir diretamente à propriedade 'width'
-  setNodeSize(controlFrame, 250);
+  setNodeSize(controlFrame, 250); // Usar função segura em vez de width direto
   controlFrame.paddingLeft = 12;
   controlFrame.paddingRight = 12;
   controlFrame.paddingTop = 8;
@@ -458,93 +456,102 @@ async function processQForm(node: QuasarNode, settings: PluginSettings): Promise
     
     try {
       // Processar componente filho
-      const childComponent = await processFormComponents(child, settings);
+      const childComponent = await processFormComponents(child, child.tagName.toLowerCase(), settings);
       if (childComponent) {
         formFrame.appendChild(childComponent);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(`Erro ao processar filho do form (${child.tagName}):`, error);
+    }
+  }
+  
+  // Se não tiver filhos, adicionar um exemplo de campo
+  if (formFrame.children.length === 0) {
+    const exampleInput = await processQInput({
+      tagName: 'q-input',
+      attributes: {
+        label: 'Exemplo de campo',
+        outlined: 'true'
+      },
+      childNodes: []
+    }, settings);
+    
+    formFrame.appendChild(exampleInput);
+  }
+  
+  return formFrame;
 }
-
 
 /**
  * Processa um componente q-field
  */
-  async function processQField(node: QuasarNode, settings: PluginSettings): Promise<FrameNode> {
-    const fieldFrame = figma.createFrame();
-    fieldFrame.name = "q-field";
-    fieldFrame.layoutMode = "VERTICAL";
-    fieldFrame.primaryAxisSizingMode = "AUTO";
-    fieldFrame.counterAxisSizingMode = "AUTO";
-    fieldFrame.itemSpacing = 4;
-    fieldFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 }, opacity: 0 }];
-
-    
-    
-    // Extrair propriedades
-    const { props, styles } = extractStylesAndProps(node);
-    
-    // Criar label se existir
-    if (props.label) {
-      const labelNode = await createText(props.label, {
-        fontSize: 14,
-        fontWeight: 'medium',
-        color: { r: 0.4, g: 0.4, b: 0.4 }
-      });
-      if (labelNode) {
-        labelNode.name = "q-field__label";
-        fieldFrame.appendChild(labelNode);
-      }
-    }
-    
-    // Container para o campo
-    const controlFrame = figma.createFrame();
-    controlFrame.name = "q-field__control";
-    controlFrame.layoutMode = "HORIZONTAL";
-    controlFrame.primaryAxisSizingMode = "FIXED";
-    controlFrame.counterAxisSizingMode = "AUTO";
-    setNodeSize(controlFrame, 250);
-    controlFrame.paddingLeft = 12;
-    controlFrame.paddingRight = 12;
-    controlFrame.paddingTop = 8;
-    controlFrame.paddingBottom = 8;
-    controlFrame.itemSpacing = 8;
-    
-    // Definir aparência do field
-    controlFrame.fills = [{ type: 'SOLID', color: { r: 0.98, g: 0.98, b: 0.98 } }];
-    controlFrame.cornerRadius = 4;
-    
-    // Processar conteúdo personalizado do field
-    // (Em um cenário real, precisaríamos processar os slots, mas vamos simplificar)
-    
-    // Texto padrão para o conteúdo
-    const contentText = await createText("Conteúdo do field", {
+async function processQField(node: QuasarNode, settings: PluginSettings): Promise<FrameNode> {
+  const fieldFrame = figma.createFrame();
+  fieldFrame.name = "q-field";
+  fieldFrame.layoutMode = "VERTICAL";
+  fieldFrame.primaryAxisSizingMode = "AUTO";
+  fieldFrame.counterAxisSizingMode = "AUTO";
+  fieldFrame.itemSpacing = 4;
+  fieldFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 }, opacity: 0 }];
+  
+  // Extrair propriedades
+  const { props, styles } = extractStylesAndProps(node);
+  
+  // Criar label se existir
+  if (props.label) {
+    const labelNode = await createText(props.label, {
       fontSize: 14,
-      color: { r: 0.3, g: 0.3, b: 0.3 }
+      fontWeight: 'medium',
+      color: { r: 0.4, g: 0.4, b: 0.4 }
     });
-    
-    if (contentText) {
-      controlFrame.appendChild(contentText);
+    if (labelNode) {
+      labelNode.name = "q-field__label";
+      fieldFrame.appendChild(labelNode);
     }
-    
-    fieldFrame.appendChild(controlFrame);
-    
-    // Adicionar mensagem de erro/hint
-    if (props.hint && !props.error) {
-      const hintNode = await createText(props.hint, {
-        fontSize: 12,
-        color: { r: 0.6, g: 0.6, b: 0.6 }
-      });
-      if (hintNode) {
-        fieldFrame.appendChild(hintNode);
-      }
-    }
-    
-    // Implementação básica, similar a outros processadores
-    fieldFrame.layoutMode = "VERTICAL";
-    fieldFrame.primaryAxisSizingMode = "AUTO";
-    fieldFrame.counterAxisSizingMode = "AUTO";
-    
-
-    return fieldFrame;
   }
+  
+  // Container para o campo
+  const controlFrame = figma.createFrame();
+  controlFrame.name = "q-field__control";
+  controlFrame.layoutMode = "HORIZONTAL";
+  controlFrame.primaryAxisSizingMode = "FIXED";
+  controlFrame.counterAxisSizingMode = "AUTO";
+  setNodeSize(controlFrame, 250); // Usar função segura em vez de width direto
+  controlFrame.paddingLeft = 12;
+  controlFrame.paddingRight = 12;
+  controlFrame.paddingTop = 8;
+  controlFrame.paddingBottom = 8;
+  controlFrame.itemSpacing = 8;
+  
+  // Definir aparência do field
+  controlFrame.fills = [{ type: 'SOLID', color: { r: 0.98, g: 0.98, b: 0.98 } }];
+  controlFrame.cornerRadius = 4;
+  
+  // Processar conteúdo personalizado do field
+  // (Em um cenário real, precisaríamos processar os slots, mas vamos simplificar)
+  
+  // Texto padrão para o conteúdo
+  const contentText = await createText("Conteúdo do field", {
+    fontSize: 14,
+    color: { r: 0.3, g: 0.3, b: 0.3 }
+  });
+  
+  if (contentText) {
+    controlFrame.appendChild(contentText);
+  }
+  
+  fieldFrame.appendChild(controlFrame);
+  
+  // Adicionar mensagem de erro/hint
+  if (props.hint && !props.error) {
+    const hintNode = await createText(props.hint, {
+      fontSize: 12,
+      color: { r: 0.6, g: 0.6, b: 0.6 }
+    });
+    if (hintNode) {
+      fieldFrame.appendChild(hintNode);
+    }
+  }
+  
+  return fieldFrame;
 }

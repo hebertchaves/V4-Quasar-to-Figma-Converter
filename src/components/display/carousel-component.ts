@@ -1,29 +1,8 @@
 // src/components/display/carousel-component.ts
 import { QuasarNode, PluginSettings } from '../../types/settings';
 import { extractStylesAndProps, findChildrenByTagName } from '../../utils/quasar-utils';
-import { applyStylesToFigmaNode, createText, createShadowEffect } from '../../utils/figma-utils';
+import { applyStylesToFigmaNode, createText, createShadowEffect, setNodeSize } from '../../utils/figma-utils';
 import { quasarColors } from '../../data/color-map';
-// Importar utilitário de redimensionamento
-import { setNodeSize } from '../../utils/figma-utils';
-
-// Substituir atribuições diretas de width/height por método seguro
-setNodeSize(slideContainer, 400, 250);
-setNodeSize(slideContent, 400, 250);
-
-// Correção de preenchimentos para evitar tipos inválidos
-slideContent.fills = [{ 
-  type: 'SOLID', 
-  color: { r: 0, g: 0, b: 0 } 
-}];
-
-// Ajustar sizing modes para valores válidos
-arrowsContainer.primaryAxisSizingMode = 'AUTO';
-
-// Ajustar preenchimentos com cores seguras
-leftArrow.fills = [{ 
-  type: 'SOLID', 
-  color: { r: 0, g: 0, b: 0 } 
-}];
 
 /**
  * Processa um componente de carrossel Quasar (q-carousel)
@@ -36,7 +15,7 @@ export async function processCarouselComponent(node: QuasarNode, settings: Plugi
   carouselFrame.layoutMode = "VERTICAL";
   carouselFrame.primaryAxisSizingMode = "AUTO";
   carouselFrame.counterAxisSizingMode = "FIXED";
-  carouselFrame.width = 400;
+  carouselFrame.resize(400, carouselFrame.height);
   carouselFrame.cornerRadius = 4;
   carouselFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
   
@@ -49,13 +28,8 @@ export async function processCarouselComponent(node: QuasarNode, settings: Plugi
   }
   
   // Configurações adicionais
-  if (props.arrows === 'true' || props.arrows === '') {
-    // Serão adicionadas setas
-  }
-  
-  if (props.navigation === 'true' || props.navigation === '') {
-    // Será adicionada navegação
-  }
+  const showArrows = props.arrows === 'true' || props.arrows === '';
+  const showNavigation = props.navigation === 'true' || props.navigation === '';
   
   // Processar slides
   const slideNodes = findChildrenByTagName(node, 'q-carousel-slide');
@@ -69,8 +43,7 @@ export async function processCarouselComponent(node: QuasarNode, settings: Plugi
     slideContainer.layoutMode = "HORIZONTAL";
     slideContainer.primaryAxisSizingMode = "FIXED";
     slideContainer.counterAxisSizingMode = "FIXED";
-    slideContainer.width = 400;
-    slideContainer.height = 250;
+    setNodeSize(slideContainer, 400, 250);
     slideContainer.fills = [{ type: 'SOLID', color: { r: 0.9, g: 0.9, b: 0.9 } }];
     
     // Exemplo de conteúdo do slide
@@ -79,11 +52,10 @@ export async function processCarouselComponent(node: QuasarNode, settings: Plugi
     slideContent.layoutMode = "VERTICAL";
     slideContent.primaryAxisSizingMode = "FIXED";
     slideContent.counterAxisSizingMode = "FIXED";
-    slideContent.width = 400;
-    slideContent.height = 250;
+    setNodeSize(slideContent, 400, 250);
     slideContent.primaryAxisAlignItems = "CENTER";
     slideContent.counterAxisAlignItems = "CENTER";
-    slideContent.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0, a: 0 } }];
+    slideContent.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0 }, opacity: 0 }];
     
     const slideText = await createText("Slide 1", {
       fontSize: 24,
@@ -109,8 +81,7 @@ export async function processCarouselComponent(node: QuasarNode, settings: Plugi
     slideContainer.layoutMode = "HORIZONTAL";
     slideContainer.primaryAxisSizingMode = "FIXED";
     slideContainer.counterAxisSizingMode = "FIXED";
-    slideContainer.width = 400;
-    slideContainer.height = 250;
+    setNodeSize(slideContainer, 400, 250);
     slideContainer.fills = [{ type: 'SOLID', color: { r: 0.9, g: 0.9, b: 0.9 } }];
     
     // Mostrar slide ativo
@@ -123,11 +94,10 @@ export async function processCarouselComponent(node: QuasarNode, settings: Plugi
     slideContent.layoutMode = "VERTICAL";
     slideContent.primaryAxisSizingMode = "FIXED";
     slideContent.counterAxisSizingMode = "FIXED";
-    slideContent.width = 400;
-    slideContent.height = 250;
+    setNodeSize(slideContent, 400, 250);
     slideContent.primaryAxisAlignItems = "CENTER";
     slideContent.counterAxisAlignItems = "CENTER";
-    slideContent.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0, a: 0 } }];
+    slideContent.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0 }, opacity: 0 }];
     
     // Tentar extrair texto ou nome do slide
     let slideName = slideProps.name || `Slide ${activeSlideIndex + 1}`;
@@ -153,22 +123,22 @@ export async function processCarouselComponent(node: QuasarNode, settings: Plugi
   }
   
   // Adicionar controles de navegação
-  if (props.arrows === 'true' || props.arrows === '') {
+  if (showArrows) {
     const arrowsContainer = figma.createFrame();
     arrowsContainer.name = "q-carousel__arrows";
     arrowsContainer.layoutMode = "HORIZONTAL";
     arrowsContainer.primaryAxisSizingMode = "FILL";
     arrowsContainer.counterAxisSizingMode = "FIXED";
-    arrowsContainer.height = 40;
+    arrowsContainer.resize(arrowsContainer.width, 40);
     arrowsContainer.primaryAxisAlignItems = "SPACE_BETWEEN";
-    arrowsContainer.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0, a: 0 } }];
+    arrowsContainer.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0 }, opacity: 0 }];
     
     // Seta esquerda
     const leftArrow = figma.createFrame();
     leftArrow.name = "q-carousel__arrow-left";
     leftArrow.resize(40, 40);
     leftArrow.cornerRadius = 20;
-    leftArrow.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0, a: 0.3 } }];
+    leftArrow.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0 }, opacity: 0.3 }];
     
     const leftIcon = await createText("<", {
       fontSize: 16,
@@ -184,7 +154,7 @@ export async function processCarouselComponent(node: QuasarNode, settings: Plugi
     rightArrow.name = "q-carousel__arrow-right";
     rightArrow.resize(40, 40);
     rightArrow.cornerRadius = 20;
-    rightArrow.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0, a: 0.3 } }];
+    rightArrow.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0 }, opacity: 0.3 }];
     
     const rightIcon = await createText(">", {
       fontSize: 16,
@@ -202,7 +172,7 @@ export async function processCarouselComponent(node: QuasarNode, settings: Plugi
   }
   
   // Adicionar navegação
-  if (props.navigation === 'true' || props.navigation === '') {
+  if (showNavigation) {
     const dotsContainer = figma.createFrame();
     dotsContainer.name = "q-carousel__navigation";
     dotsContainer.layoutMode = "HORIZONTAL";
@@ -212,7 +182,7 @@ export async function processCarouselComponent(node: QuasarNode, settings: Plugi
     dotsContainer.paddingTop = 8;
     dotsContainer.paddingBottom = 8;
     dotsContainer.itemSpacing = 8;
-    dotsContainer.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0, a: 0 } }];
+    dotsContainer.fills = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0 }, opacity: 0 }];
     
     // Quantidade de dots
     const numDots = slideNodes.length > 0 ? slideNodes.length : 3;

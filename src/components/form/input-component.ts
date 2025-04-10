@@ -48,7 +48,6 @@ export async function processInputComponent(node: QuasarNode, settings: PluginSe
   controlFrame.layoutMode = "HORIZONTAL";
   controlFrame.primaryAxisSizingMode = "FIXED";
   controlFrame.counterAxisSizingMode = "AUTO";
-  // Usar resize em vez de atribuir diretamente à propriedade 'width'
   setNodeSize(controlFrame, 250);
   controlFrame.paddingLeft = 12;
   controlFrame.paddingRight = 12;

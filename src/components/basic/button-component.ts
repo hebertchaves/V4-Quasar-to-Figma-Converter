@@ -5,8 +5,6 @@ import { applyStylesToFigmaNode, createText, getContrastingTextColor } from '../
 import { quasarColors } from '../../data/color-map';
 import { processQuasarClass } from '../../utils/style-utils';
 
-
-
 /**
  * Processa um componente de botão Quasar (q-btn)
  */
@@ -105,32 +103,32 @@ export async function processButtonComponent(node: QuasarNode, settings: PluginS
     // Cor do ícone igual à do texto
     const textNode = buttonFrame.findChild(n => n.type === 'TEXT') as TextNode;
     if (textNode && textNode.fills && textNode.fills.length > 0) {
-      iconFrame.fills = [...textNode.fills];
+      // Criar cópia de fills segura, removendo propriedades inválidas
+      iconFrame.fills = textNode.fills.map(fill => {
+        if (fill.type === 'SOLID') {
+          return { 
+            type: 'SOLID', 
+            color: { 
+              r: fill.color.r, 
+              g: fill.color.g, 
+              b: fill.color.b 
+            },
+            opacity: fill.opacity
+          };
+        }
+        return fill;
+      });
     } else {
-      iconFrame.fills = [{ type: 'SOLID', color: isFlat || isOutline ? btnColor : getContrastingTextColor(btnColor) }];
+      iconFrame.fills = [{ 
+        type: 'SOLID', 
+        color: isFlat || isOutline ? btnColor : getContrastingTextColor(btnColor) 
+      }];
     }
     
     // Adicionar ícone no início do botão
     buttonFrame.insertChild(0, iconFrame);
     buttonFrame.itemSpacing = 8;
   }
-  // Correção na manipulação de fills para evitar tipos inválidos
-if (textNode && textNode.fills && textNode.fills.length > 0) {
-  // Criar cópia de fills segura, removendo propriedades inválidas
-  iconFrame.fills = textNode.fills.map(fill => {
-    if (fill.type === 'SOLID') {
-      return { 
-        type: 'SOLID', 
-        color: { 
-          r: fill.color.r, 
-          g: fill.color.g, 
-          b: fill.color.b 
-        } 
-      };
-    }
-    return fill;
-  });
-}
   
   // Verificar se é tamanho denso ou outros tamanhos
   if (props.dense) {
@@ -167,7 +165,6 @@ if (textNode && textNode.fills && textNode.fills.length > 0) {
         break;
     }
   }
-  
   
   return buttonFrame;
 }
