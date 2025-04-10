@@ -3,6 +3,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
 
+
 // Configuração compartilhada para desenvolvimento e produção
 const commonConfig = {
   plugins: [
@@ -51,4 +52,19 @@ const mainConfig = {
 };
 
 // Exportar configuração
-export default [mainConfig];
+export default {
+  input: 'src/code.ts',
+  output: {
+    file: 'dist/code.js',
+    format: 'iife',  // Immediately Invoked Function Expression
+    sourcemap: process.env.NODE_ENV !== 'production'
+  },
+  plugins: [
+    typescript({
+      target: 'es5',  // Transpile para ES5
+      module: 'esnext',
+      strict: false
+    }),
+    terser() // Opcional: minificação
+  ]
+}

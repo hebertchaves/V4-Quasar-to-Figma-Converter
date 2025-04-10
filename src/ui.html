@@ -474,5 +474,16 @@
       }
     }
   </script>
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+      console.error('Erro global:', { message, source, lineno, colno, error });
+      parent.postMessage({
+        pluginMessage: {
+          type: 'error',
+          details: { message, source, lineno, colno }
+        }
+      }, '*');
+    };
+  </script>
 </body>
 </html>
