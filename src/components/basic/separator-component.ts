@@ -2,7 +2,31 @@
 import { QuasarNode, PluginSettings } from '../../types/settings';
 import { extractStylesAndProps } from '../../utils/quasar-utils';
 import { applyStylesToFigmaNode } from '../../utils/figma-utils';
+// Importar utilitário de redimensionamento
+import { setNodeSize } from '../../utils/figma-utils';
+import { quasarColors } from '../../data/color-map';
 
+// Substituir modificações diretas de dimensões
+if (props.spaced === 'true' || props.spaced === '') {
+  const spacedValue = typeof props.spaced === 'string' && props.spaced !== 'true' ? 
+    parseInt(props.spaced) : 
+    16;
+      
+  if (isVertical) {
+    separator.y = spacedValue;
+    // Usar método seguro de redimensionamento
+    setNodeSize(separator, separator.width, separator.height - (2 * spacedValue));
+  } else {
+    separator.x = spacedValue;
+    // Usar método seguro de redimensionamento
+    setNodeSize(separator, separator.width - (2 * spacedValue), separator.height);
+  }
+}
+
+// Substituir referência a colorMap por quasarColors
+const separatorColor = props.color && quasarColors[props.color] 
+  ? quasarColors[props.color] 
+  : { r: 0.9, g: 0.9, b: 0.9 };
 /**
  * Processa um componente separador Quasar (q-separator)
  */

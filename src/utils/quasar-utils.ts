@@ -1,63 +1,5 @@
-import { QuasarNode } from '../types/settings';
+import { QuasarNode, ComponentTypeInfo } from '../types/settings';
 import { cssColorToFigmaColor } from './style-utils';
-
-/**
- * Estrutura para identificação de componentes
- */
-export interface ComponentTypeInfo {
-  category: string;
-  type: string;
-}
-
-/**
- * Detecta o tipo e categoria de um componente Quasar
- */
-export function detectComponentType(node: QuasarNode): ComponentTypeInfo {
-  const tagName = node.tagName.toLowerCase();
-  
-  // Componentes básicos
-  if (['q-btn', 'q-icon', 'q-avatar', 'q-badge', 'q-chip', 'q-card', 'q-separator'].includes(tagName)) {
-    return { category: 'basic', type: tagName.substring(2) }; // Remove o "q-"
-  }
-  
-  // Componentes de formulário
-  if (['q-input', 'q-select', 'q-checkbox', 'q-radio', 'q-toggle', 'q-slider', 'q-rating', 'q-form', 'q-field'].includes(tagName)) {
-    return { category: 'form', type: tagName.substring(2) };
-  }
-  
-  // Componentes de layout
-  if (['q-layout', 'q-page', 'q-drawer', 'q-header', 'q-footer', 'q-page-container', 'q-toolbar', 'q-bar'].includes(tagName)) {
-    return { category: 'layout', type: tagName.substring(2) };
-  }
-  
-  // Componentes de navegação
-  if (['q-tabs', 'q-tab', 'q-tab-panels', 'q-tab-panel', 'q-breadcrumbs', 'q-pagination', 'q-stepper'].includes(tagName)) {
-    return { category: 'navigation', type: tagName.substring(2) };
-  }
-  
-  // Componentes de popup
-  if (['q-dialog', 'q-tooltip', 'q-menu', 'q-popup-edit', 'q-popup-proxy'].includes(tagName)) {
-    return { category: 'popup', type: tagName.substring(2) };
-  }
-  
-  // Componentes de rolagem
-  if (['q-scroll-area', 'q-infinite-scroll', 'q-pull-to-refresh'].includes(tagName)) {
-    return { category: 'scrolling', type: tagName.substring(2) };
-  }
-  
-  // Componentes de exibição
-  if (['q-table', 'q-list', 'q-item', 'q-carousel', 'q-timeline', 'q-tree'].includes(tagName)) {
-    return { category: 'display', type: tagName.substring(2) };
-  }
-  
-  // Outros componentes
-  if (['q-banner', 'q-expansion-item', 'q-skeleton', 'q-chat-message', 'q-uploader'].includes(tagName)) {
-    return { category: 'other', type: tagName.substring(2) };
-  }
-  
-  // Componente genérico ou desconhecido
-  return { category: 'unknown', type: tagName };
-}
 
 /**
  * Extrai estilos e props de um nó Quasar
@@ -116,7 +58,7 @@ export function parseInlineStyles(styleString?: string) {
         }
       }
       
-      // Processar valores com unidades (px, em, rem, etc.)
+      // Processar valores com unidades (px, em, rem, vh, vw, %)
       if (value.match(/^-?\d+(\.\d+)?(px|em|rem|vh|vw|%)$/)) {
         const numValue = parseFloat(value);
         const unit = value.replace(/^-?\d+(\.\d+)?/, '');
@@ -169,6 +111,32 @@ export function findChildByTagName(node: QuasarNode, tagName: string): QuasarNod
 }
 
 /**
+ * Encontra todos os filhos com uma determinada tag
+ */
+export function findChildrenByTagName(node: QuasarNode, tagName: string): QuasarNode[] {
+  const results: QuasarNode[] = [];
+  
+  if (!node.childNodes || node.childNodes.length === 0) {
+    return results;
+  }
+  
+  // Converter para minúsculas para comparação case-insensitive
+  const targetTag = tagName.toLowerCase();
+  
+  for (const child of node.childNodes) {
+    if (child.tagName && child.tagName.toLowerCase() === targetTag) {
+      results.push(child);
+    }
+    
+    // Busca recursiva
+    const childResults = findChildrenByTagName(child, tagName);
+    results.push(...childResults);
+  }
+  
+  return results;
+}
+
+/**
  * Extrai o texto de um botão a partir de várias fontes possíveis
  */
 export function getButtonText(node: QuasarNode): string {
@@ -200,20 +168,51 @@ export function getButtonText(node: QuasarNode): string {
 }
 
 /**
- * Extrai texto de um nó, seja diretamente ou de seus filhos
+ * Detecta o tipo e categoria de um componente Quasar
  */
-export function extractNodeText(node: QuasarNode): string {
-  // Se for nó de texto, retornar o texto diretamente
-  if (node.tagName === '#text' && node.text) {
-    return node.text.trim();
+export function detectComponentType(node: QuasarNode): ComponentTypeInfo {
+  const tagName = node.tagName.toLowerCase();
+  
+  // Componentes básicos
+  if (['q-btn', 'q-icon', 'q-avatar', 'q-badge', 'q-chip', 'q-card', 'q-separator'].includes(tagName)) {
+    return { category: 'basic', type: tagName.substring(2) }; // Remove o "q-"
   }
   
-  // Se tiver filhos, combinar o texto de todos eles
-  let combinedText = '';
-  
-  for (const child of node.childNodes) {
-    combinedText += extractNodeText(child) + ' ';
+  // Componentes de formulário
+  if (['q-input', 'q-select', 'q-checkbox', 'q-radio', 'q-toggle', 'q-slider', 'q-rating', 'q-form', 'q-field'].includes(tagName)) {
+    return { category: 'form', type: tagName.substring(2) };
   }
   
-  return combinedText.trim();
+  // Componentes de layout
+  if (['q-layout', 'q-page', 'q-drawer', 'q-header', 'q-footer', 'q-page-container', 'q-toolbar', 'q-bar'].includes(tagName)) {
+    return { category: 'layout', type: tagName.substring(2) };
+  }
+  
+  // Componentes de navegação
+  if (['q-tabs', 'q-tab', 'q-tab-panels', 'q-tab-panel', 'q-breadcrumbs', 'q-pagination', 'q-stepper'].includes(tagName)) {
+    return { category: 'navigation', type: tagName.substring(2) };
+  }
+  
+  // Componentes de popup
+  if (['q-dialog', 'q-tooltip', 'q-menu', 'q-popup-edit', 'q-popup-proxy'].includes(tagName)) {
+    return { category: 'popup', type: tagName.substring(2) };
+  }
+  
+  // Componentes de rolagem
+  if (['q-scroll-area', 'q-infinite-scroll', 'q-pull-to-refresh'].includes(tagName)) {
+    return { category: 'scrolling', type: tagName.substring(2) };
+  }
+  
+  // Componentes de exibição
+  if (['q-table', 'q-list', 'q-item', 'q-carousel', 'q-timeline', 'q-tree'].includes(tagName)) {
+    return { category: 'display', type: tagName.substring(2) };
+  }
+  
+  // Outros componentes
+  if (['q-banner', 'q-expansion-item', 'q-skeleton', 'q-chat-message', 'q-uploader'].includes(tagName)) {
+    return { category: 'other', type: tagName.substring(2) };
+  }
+  
+  // Componente genérico ou desconhecido
+  return { category: 'unknown', type: tagName };
 }

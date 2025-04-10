@@ -1,3 +1,7 @@
+// src/utils/figma-utils.ts
+
+import { RGB, RGBA, ExtractedStyles } from '../types/settings';
+
 /**
  * Carrega as fontes necessárias para uso no Figma
  */
@@ -169,4 +173,214 @@ export function getContrastingTextColor(bgColor: RGB): RGB {
  */
 export function isSolidPaint(paint: Paint): paint is SolidPaint {
   return paint.type === 'SOLID';
+}
+
+/**
+ * Converte uma cor CSS para o formato Figma
+ */
+export function cssColorToFigmaColor(cssColor: string): RGB | RGBA | null {
+  // Hex
+  if (cssColor.startsWith('#')) {
+    let hex = cssColor.substring(1);
+    
+    // Converter #RGB para #RRGGBB
+    if (hex.length === 3) {
+      hex = hex.split('').map(h => h + h).join('');
+    }
+    
+    // Extrair componentes RGB
+    const r = parseInt(hex.substring(0, 2), 16) / 255;
+    const g = parseInt(hex.substring(2, 4), 16) / 255;
+    const b = parseInt(hex.substring(4, 6), 16) / 255;
+    
+    // Extrair alpha se disponível (#RRGGBBAA)
+    let a = 1;
+    if (hex.length === 8) {
+      a = parseInt(hex.substring(6, 8), 16) / 255;
+    }
+    
+    return { r, g, b, a };
+  }
+  
+  // RGB/RGBA
+  if (cssColor.startsWith('rgb')) {
+    const values = cssColor.match(/\d+(\.\d+)?/g);
+    
+    if (values && values.length >= 3) {
+      const r = parseInt(values[0]) / 255;
+      const g = parseInt(values[1]) / 255;
+      const b = parseInt(values[2]) / 255;
+      const a = values.length === 4 ? parseFloat(values[3]) : 1;
+      
+      return { r, g, b, a };
+    }
+  }
+  
+  // Cores nomeadas comuns
+  const namedColors: Record<string, RGB> = {
+    'white': { r: 1, g: 1, b: 1 },
+    'black': { r: 0, g: 0, b: 0 },
+    'red': { r: 1, g: 0, b: 0 },
+    'green': { r: 0, g: 0.8, b: 0 },
+    'blue': { r: 0, g: 0, b: 1 },
+    'yellow': { r: 1, g: 1, b: 0 },
+    'gray': { r: 0.5, g: 0.5, b: 0.5 },
+    'transparent': { r: 0, g: 0, b: 0 }
+  };
+  
+  if (namedColors[cssColor.toLowerCase()]) {
+    return namedColors[cssColor.toLowerCase()];
+  }
+  
+  return null;
+}
+
+/**
+ * Extrai estilos de uma string CSS inline
+ */
+export function extractInlineStyles(styleString: string): ExtractedStyles {
+  const styles: ExtractedStyles = {};
+  
+  if (!styleString) return styles;
+  
+  const declarations = styleString.split(';');
+  
+  for (const declaration of declarations) {
+    if (!declaration.trim()) continue;
+    
+    const colonPos = declaration.indexOf(':');
+    if (colonPos === -1) continue;
+    
+    const property = declaration.substring(0, colonPos).trim();
+    const value = declaration.substring(colonPos + 1).trim();
+    
+    if (!property || !value) continue;
+    
+    // Converter para camelCase para compatibilidade com API do Figma
+    const camelProperty = property.replace(/-([a-z])/g, (_, g1) => g1.toUpperCase());
+    
+    // Processar valores específicos
+    if (property.includes('color')) {
+      const figmaColor = cssColorToFigmaColor(value);
+      if (figmaColor) {
+        if (property === 'color') {
+          styles.fontColor = figmaColor;
+        } else if (property === 'background-color') {
+          styles.fills = [{ type: 'SOLID', color: figmaColor }];
+        }
+        continue;
+      }
+    }
+    
+    // Processar padding e margin
+    if (property.startsWith('padding')) {
+      processPaddingProperty(property, value, styles);
+      continue;
+    }
+    
+    if (property.startsWith('margin')) {
+      processMarginProperty(property, value, styles);
+      continue;
+    }
+    
+    // Processar propriedades de texto
+    if (property === 'font-size') {
+      styles.fontSize = parseFontSize(value);
+      continue;
+    }
+    
+    if (property === 'font-weight') {
+      styles.fontWeight = value;
+      continue;
+    }
+    
+    if (property === 'text-align') {
+      styles.textAlignHorizontal = getTextAlignment(value);
+      continue;
+    }
+    
+    // Processar bordas
+    if (property === 'border-radius') {
+      styles.cornerRadius = parseInt(value);
+      continue;
+    }
+    
+    // Adicionar outras propriedades diretamente
+    styles[camelProperty] = value;
+  }
+  
+  return styles;
+}
+
+/**
+ * Funções auxiliares para processar propriedades CSS específicas
+ */
+function processPaddingProperty(property: string, value: string, styles: ExtractedStyles) {
+  const pixels = parsePixelValue(value);
+  if (pixels === null) return;
+  
+  if (property === 'padding') {
+    // Valor único aplica a todos os lados
+    styles.paddingTop = pixels;
+    styles.paddingRight = pixels;
+    styles.paddingBottom = pixels;
+    styles.paddingLeft = pixels;
+  } else if (property === 'padding-top') {
+    styles.paddingTop = pixels;
+  } else if (property === 'padding-right') {
+    styles.paddingRight = pixels;
+  } else if (property === 'padding-bottom') {
+    styles.paddingBottom = pixels;
+  } else if (property === 'padding-left') {
+    styles.paddingLeft = pixels;
+  }
+}
+
+function processMarginProperty(property: string, value: string, styles: ExtractedStyles) {
+  // Implementação similar ao padding
+  // (Omitido por brevidade, já que margin geralmente não tem impacto direto no Figma)
+}
+
+function parsePixelValue(value: string): number | null {
+  const match = value.match(/^(\d+)(px|rem|em)?$/);
+  if (!match) return null;
+  
+  const numValue = parseInt(match[1]);
+  const unit = match[2] || 'px';
+  
+  if (unit === 'px') {
+    return numValue;
+  } else if (unit === 'rem' || unit === 'em') {
+    // Considerando 1rem/em = 16px (aproximação)
+    return numValue * 16;
+  }
+  
+  return numValue;
+}
+
+function parseFontSize(value: string): number {
+  // Extrair valor numérico de qualquer unidade
+  const pixels = parsePixelValue(value);
+  if (pixels !== null) return pixels;
+  
+  // Valores nomeados comuns
+  const fontSizes: Record<string, number> = {
+    'small': 12,
+    'medium': 14,
+    'large': 16,
+    'x-large': 20,
+    'xx-large': 24
+  };
+  
+  return fontSizes[value] || 14; // 14px como padrão
+}
+
+function getTextAlignment(value: string): 'LEFT' | 'CENTER' | 'RIGHT' | 'JUSTIFIED' {
+  switch (value) {
+    case 'left': return 'LEFT';
+    case 'center': return 'CENTER';
+    case 'right': return 'RIGHT';
+    case 'justify': return 'JUSTIFIED';
+    default: return 'LEFT';
+  }
 }

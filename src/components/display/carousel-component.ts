@@ -3,6 +3,27 @@ import { QuasarNode, PluginSettings } from '../../types/settings';
 import { extractStylesAndProps, findChildrenByTagName } from '../../utils/quasar-utils';
 import { applyStylesToFigmaNode, createText, createShadowEffect } from '../../utils/figma-utils';
 import { quasarColors } from '../../data/color-map';
+// Importar utilitário de redimensionamento
+import { setNodeSize } from '../../utils/figma-utils';
+
+// Substituir atribuições diretas de width/height por método seguro
+setNodeSize(slideContainer, 400, 250);
+setNodeSize(slideContent, 400, 250);
+
+// Correção de preenchimentos para evitar tipos inválidos
+slideContent.fills = [{ 
+  type: 'SOLID', 
+  color: { r: 0, g: 0, b: 0 } 
+}];
+
+// Ajustar sizing modes para valores válidos
+arrowsContainer.primaryAxisSizingMode = 'AUTO';
+
+// Ajustar preenchimentos com cores seguras
+leftArrow.fills = [{ 
+  type: 'SOLID', 
+  color: { r: 0, g: 0, b: 0 } 
+}];
 
 /**
  * Processa um componente de carrossel Quasar (q-carousel)

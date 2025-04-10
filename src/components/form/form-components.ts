@@ -469,8 +469,7 @@ async function processQForm(node: QuasarNode, settings: PluginSettings): Promise
 /**
  * Processa um componente q-field
  */
-async function processQField(node: QuasarNode, settings: PluginSettings): Promise<FrameNode> {
-    // q-field é semelhante a q-input mas mais genérico
+  async function processQField(node: QuasarNode, settings: PluginSettings): Promise<FrameNode> {
     const fieldFrame = figma.createFrame();
     fieldFrame.name = "q-field";
     fieldFrame.layoutMode = "VERTICAL";
@@ -478,6 +477,8 @@ async function processQField(node: QuasarNode, settings: PluginSettings): Promis
     fieldFrame.counterAxisSizingMode = "AUTO";
     fieldFrame.itemSpacing = 4;
     fieldFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 }, opacity: 0 }];
+
+    
     
     // Extrair propriedades
     const { props, styles } = extractStylesAndProps(node);
@@ -538,6 +539,12 @@ async function processQField(node: QuasarNode, settings: PluginSettings): Promis
       }
     }
     
+    // Implementação básica, similar a outros processadores
+    fieldFrame.layoutMode = "VERTICAL";
+    fieldFrame.primaryAxisSizingMode = "AUTO";
+    fieldFrame.counterAxisSizingMode = "AUTO";
+    
+
     return fieldFrame;
   }
 }

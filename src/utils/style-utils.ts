@@ -164,7 +164,83 @@ function processFlexboxClass(className: string) {
       return { primaryAxisAlignItems: 'MAX' };
     case 'justify-between':
       return { primaryAxisAlignItems: 'SPACE_BETWEEN' };
-    case 'content-start':
-      return { counterAxisAlignItems: 'START'}
+    default:
+      return null;
   }
-};
+}
+
+/**
+ * Processa classes de alinhamento de texto
+ */
+function processTextAlignmentClass(className: string) {
+  switch (className) {
+    case 'text-left':
+      return { textAlignHorizontal: 'LEFT' };
+    case 'text-center':
+      return { textAlignHorizontal: 'CENTER' };
+    case 'text-right':
+      return { textAlignHorizontal: 'RIGHT' };
+    case 'text-justify':
+      return { textAlignHorizontal: 'JUSTIFIED' };
+    default:
+      return null;
+  }
+}
+
+/**
+ * Converte uma cor CSS para o formato Figma RGB
+ */
+export function cssColorToFigmaColor(cssColor: string) {
+  // Hex
+  if (cssColor.startsWith('#')) {
+    let hex = cssColor.substring(1);
+    
+    // Converter #RGB para #RRGGBB
+    if (hex.length === 3) {
+      hex = hex.split('').map(h => h + h).join('');
+    }
+    
+    // Extrair componentes RGB
+    const r = parseInt(hex.substring(0, 2), 16) / 255;
+    const g = parseInt(hex.substring(2, 4), 16) / 255;
+    const b = parseInt(hex.substring(4, 6), 16) / 255;
+    
+    // Extrair alpha se disponível (#RRGGBBAA)
+    let a = 1;
+    if (hex.length === 8) {
+      a = parseInt(hex.substring(6, 8), 16) / 255;
+    }
+    
+    return a < 1 ? { r, g, b, a } : { r, g, b };
+  }
+  
+  // RGB/RGBA
+  if (cssColor.startsWith('rgb')) {
+    const values = cssColor.match(/\d+(\.\d+)?/g);
+    
+    if (values && values.length >= 3) {
+      const r = parseInt(values[0]) / 255;
+      const g = parseInt(values[1]) / 255;
+      const b = parseInt(values[2]) / 255;
+      const a = values.length === 4 ? parseFloat(values[3]) : 1;
+      
+      return a < 1 ? { r, g, b, a } : { r, g, b };
+    }
+  }
+  
+  // Cores nomeadas comuns
+  const namedColors = {
+    'white': { r: 1, g: 1, b: 1 },
+    'black': { r: 0, g: 0, b: 0 },
+    'red': { r: 1, g: 0, b: 0 },
+    'green': { r: 0, g: 0.8, b: 0 },
+    'blue': { r: 0, g: 0, b: 1 },
+    'yellow': { r: 1, g: 1, b: 0 },
+    'purple': { r: 0.5, g: 0, b: 0.5 },
+    'orange': { r: 1, g: 0.65, b: 0 },
+    'gray': { r: 0.5, g: 0.5, b: 0.5 },
+    'transparent': { r: 0, g: 0, b: 0, a: 0 }
+  };
+  
+  return namedColors[cssColor.toLowerCase()];
+}

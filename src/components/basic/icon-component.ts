@@ -61,7 +61,11 @@ export async function processIconComponent(node: QuasarNode, settings: PluginSet
       }
     }
   }
-  
+  // Correção na definição de fills, removendo propriedade 'opacity' inválida
+  iconFrame.fills = [{ 
+    type: 'SOLID', 
+    color: { r: 0, g: 0, b: 0 } 
+  }];
   // Criar uma representação visual do ícone (simplificada)
   const iconVisual = figma.createFrame();
   iconVisual.name = `icon-${iconName || "default"}`;
