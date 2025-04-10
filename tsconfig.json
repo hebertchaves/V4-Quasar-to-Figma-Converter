@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "lib": ["es6", "dom"],
+    "moduleResolution": "node",
+    "strict": false,            // Relaxar verificações rigorosas
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules/@figma"
+    ],
+    "esModuleInterop": true,
+    "skipLibCheck": true,       // Pular verificação em bibliotecas
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,     // Permitir 'any' implícito
+    "strictNullChecks": false   // Desativar verificações estritas de null
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
+}
