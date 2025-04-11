@@ -1,21 +1,26 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
+    "module": "esnext",
     "lib": ["es6", "dom"],
-    "allowJs": true,
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
-    "strict": false,            // Relaxar verificações rigorosas
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
     "typeRoots": [
       "./node_modules/@types",
-      "./node_modules/@figma"
+      "./src/types"
     ],
-    "esModuleInterop": true,
-    "skipLibCheck": true,       // Pular verificação em bibliotecas
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": false,     // Permitir 'any' implícito
-    "strictNullChecks": false   // Desativar verificações estritas de null
+    "types": [
+      "@figma/plugin-typings"
+    ]
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/types/*.d.ts"
   ]
 }
