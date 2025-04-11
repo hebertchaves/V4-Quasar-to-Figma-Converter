@@ -555,46 +555,39 @@ async function processPage(node: QuasarNode, settings: PluginSettings): Promise<
 * Cria uma página genérica
 */
 async function createGenericPage(settings: PluginSettings): Promise<FrameNode> {
- const pageFrame = figma.createFrame();
- pageFrame.name = "q-page";
- 
- // Configurações básicas
- pageFrame.layoutMode = "VERTICAL";
- pageFrame.primaryAxisSizingMode = "AUTO";
- pageFrame.counterAxisSizingMode = "FIXED";
- pageFrame.resize(1024, pageFrame.height);
- pageFrame.paddingLeft = 24;
- pageFrame.paddingRight = 24;
- pageFrame.paddingTop = 24;
- pageFrame.paddingBottom = 24;
- pageFrame.itemSpacing = 16;
- pageFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
- 
- // Título da página
- const pageTitle = await createText("Título da Página", {
-   fontSize: 24,
-   fontWeight: 'bold'
- });
- pageFrame.appendChild(pageTitle);
- 
- // Subtítulo da página
- const pageSubtitle = await createText("Subtítulo com descrição da página e seus recursos", {
-   fontSize: 16,
-   color: { r: 0.5, g: 0.5, b: 0.5 }
- });
- pageFrame.appendChild(pageSubtitle);
- 
- 
- 
- // Adicionar sombra ao card
- cardFrame.effects = [{
-   type: 'DROP_SHADOW',
-   color: { r: 0, g: 0, b: 0, a: 0.2 },
-   offset: { x: 0, y: 2 },
-   radius: 4,
-   visible: true,
-   blendMode: 'NORMAL'
- }];
+  const pageFrame = figma.createFrame();
+  pageFrame.name = "q-page";
+  
+  // Configurações básicas
+  pageFrame.layoutMode = "VERTICAL";
+  pageFrame.primaryAxisSizingMode = "AUTO";
+  pageFrame.counterAxisSizingMode = "FIXED";
+  pageFrame.resize(1024, 720);
+  pageFrame.paddingLeft = 24;
+  pageFrame.paddingRight = 24;
+  pageFrame.paddingTop = 24;
+  pageFrame.paddingBottom = 24;
+  pageFrame.itemSpacing = 16;
+  pageFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+  
+  // ADICIONE ESTA DEFINIÇÃO DE cardFrame
+  const cardFrame = figma.createFrame();
+  cardFrame.name = "q-card";
+  cardFrame.layoutMode = "VERTICAL";
+  cardFrame.primaryAxisSizingMode = "AUTO";
+  cardFrame.counterAxisSizingMode = "AUTO";
+  cardFrame.cornerRadius = 4;
+  cardFrame.itemSpacing = 0;
+  
+  // Agora esta linha funcionará
+  cardFrame.effects = [{
+    type: 'DROP_SHADOW',
+    color: { r: 0, g: 0, b: 0, a: 0.2 },
+    offset: { x: 0, y: 2 },
+    radius: 4,
+    visible: true,
+    blendMode: 'NORMAL'
+  }];
  
  // Seção do card
  const sectionFrame = figma.createFrame();

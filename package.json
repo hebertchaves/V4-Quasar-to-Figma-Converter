@@ -7,7 +7,7 @@
     "watch": "rollup -c -w",
     "debug:types": "tsc --showConfig",
     "debug:figma-types": "npm list @figma/plugin-typings",
-  "check:npm-config": "npm config list"
+    "check:npm-config": "npm config list"
   },
   "author": "Seu Nome",
   "license": "MIT",

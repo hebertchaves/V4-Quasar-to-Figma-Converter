@@ -1,3 +1,4 @@
+// rollup.config.js
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
@@ -8,22 +9,15 @@ export default {
   output: {
     file: 'dist/code.js',
     format: 'iife',
-    sourcemap: process.env.NODE_ENV !== 'production',
-    globals: {
-      'node-html-parser': 'nodeHtmlParser'
-    }
+    name: 'quasarToFigmaConverter'
   },
-  external: ['node-html-parser'],
   plugins: [
-    resolve({
-      browser: true,
-      preferBuiltins: false
-    }),
+    resolve(),
     commonjs(),
     typescript({
       tsconfig: './tsconfig.json',
-      sourceMap: process.env.NODE_ENV !== 'production'
+      sourceMap: false
     }),
     process.env.NODE_ENV === 'production' && terser()
   ]
-}
+};

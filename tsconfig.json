@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "lib": ["es6", "dom"],
+    "target": "es2017",         // Atualizado para ES2017 ou posterior
+    "module": "esnext",         // Alterado para 'esnext' conforme recomendado por Rollup
+    "lib": ["es2017", "dom"],   // Atualizado para incluir ES2017
     "declaration": true,
     "outDir": "./dist",
     "strict": false,
@@ -11,7 +11,10 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "types": ["@figma/plugin-typings"]
+    "types": [
+      "@figma/plugin-typings",
+      "node"                    // Adicionado tipos do Node.js
+    ]
   },
   "include": [
     "src/**/*.ts"
